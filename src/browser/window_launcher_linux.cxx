@@ -259,7 +259,6 @@ CefRefPtr<CefResourceRequestHandler> Browser::Launcher::LaunchDeb(CefRefPtr<CefR
 	pid_t pid;
 	posix_spawn_file_actions_init(&file_actions);
 	posix_spawnattr_init(&attributes);
-	posix_spawnattr_setflags(&attributes, POSIX_SPAWN_SETSID);
 	std::string path_str(this->rs3_path.c_str());
 	char* argv[2];
 	argv[0] = path_str.data();

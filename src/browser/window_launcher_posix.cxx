@@ -13,30 +13,37 @@
 // true on success, false on failure, out is undefined on failure, you know the drill.
 // java_home should be the result of getenv("JAVA_HOME") and therefore is allowed to be null
 bool FindJava(const char* java_home, std::string& out) {
-	if (java_home) {
-		std::filesystem::path java(java_home);
-		java.append("bin");
-		java.append("java");
-		if (std::filesystem::exists(java)) {
-			out = java.string();
-			return true;
-		}
-	}
-	const char* path = getenv("PATH");
-	while (true) {
-		const char* next_colon = strchr(path, ':');
-		const bool is_last = next_colon == nullptr;
-		std::string_view path_item = is_last ? std::string_view(path) : std::string_view(path, (size_t)(next_colon - path));
-		std::filesystem::path java(path_item);
-		java.append("java");
-		if (std::filesystem::exists(java)) {
-			out = java.string();
-			return true;
-		}
-		if (is_last) break;
-		path = next_colon + 1;
-	}
-	return false;
+    if (java_home) {
+        std::filesystem::path java(java_home);
+        java.append("bin").append("java");
+        if (std::filesystem::exists(java)) {
+            std::cout << "Found Java at: " << java << std::endl;
+            out = java.string();
+            return true;
+        }
+    }
+
+    const char* path = getenv("PATH");
+    while (true) {
+        const char* next_colon = strchr(path, ':');
+        const bool is_last = next_colon == nullptr;
+        std::string_view path_item = is_last ? std::string_view(path) : std::string_view(path, (size_t)(next_colon - path));
+
+        std::filesystem::path java(path_item);
+        java.append("java");
+
+        std::cout << "Analyzing path: " << java << std::endl;
+
+        if (std::filesystem::exists(java)) {
+            std::cout << "Found Java at: " << java << std::endl;
+            out = java.string();
+            return true;
+        }
+        if (is_last) break;
+        path = next_colon + 1;
+    }
+
+    return false;
 }
 
 CefRefPtr<CefResourceRequestHandler> Browser::Launcher::LaunchRs3Deb(CefRefPtr<CefRequest> request, std::string_view query) {

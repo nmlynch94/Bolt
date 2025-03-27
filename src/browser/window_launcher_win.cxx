@@ -332,6 +332,7 @@ CefRefPtr<CefResourceRequestHandler> Browser::Launcher::LaunchOsrsExe(CefRefPtr<
 
 	// if there was a "hash" in the query string, we need to save the new game exe and the new hash
 	if (has_hash) {
+
 		QSENDBADREQUESTIF(post_data == nullptr || post_data->GetElementCount() != 1);
 		CefPostData::ElementVector vec;
 		post_data->GetElements(vec);

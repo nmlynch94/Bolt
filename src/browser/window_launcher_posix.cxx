@@ -295,6 +295,7 @@ CefRefPtr<CefResourceRequestHandler> Browser::Launcher::LaunchRs3Deb(CefRefPtr<C
 	pid_t pid = fork();
 	if (pid == 0) {
 		setpgrp();
+		fmt::print("[B] Attempting to chdir to {}\n", this->data_dir.string());
 		if (chdir(this->data_dir.c_str())) {
 			fmt::print("[B] new process was unable to chdir: {}\n", errno);
 			exit(1);
@@ -374,7 +375,7 @@ CefRefPtr<CefResourceRequestHandler> Browser::Launcher::LaunchOsrsExe(CefRefPtr<
 		vec[0]->GetBytes(exe_size, exe);
 		
 		size_t written = 0;
-		int file = open(this->osrs_exe_path.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0755);
+		int file = open("/run/parent/apt/opt/bolt-launcher/osrswindows.exe", O_WRONLY | O_CREAT | O_TRUNC, 0755);
 		if (file == -1) {
 			// failed to open game binary file on disk - probably in use or a permissions issue
 			delete[] exe;
@@ -410,6 +411,13 @@ CefRefPtr<CefResourceRequestHandler> Browser::Launcher::LaunchOsrsExe(CefRefPtr<
 		setenv("GAMEID", "1343370", true);
 		// tell umu to use the latest GE Proton it can find, which will perform better in most cases
 		setenv("PROTONPATH", "GE-Proton", true);
+
+        // proton pressure vessel is a sandbox inside of the flatpak sandbox.
+		fmt::print("[B] Attempting to chdir to {}\n", this->data_dir.string());
+		if (chdir(this->data_dir.c_str())) {
+			fmt::print("[B] new process was unable to chdir: {}\n", errno);
+			exit(1);
+		}
 
 		execv(*argv, argv);
 	}
@@ -522,6 +530,7 @@ CefRefPtr<CefResourceRequestHandler> Browser::Launcher::LaunchRuneliteJar(CefRef
 	pid_t pid = fork();
 	if (pid == 0) {
 		setpgrp();
+        fmt::print("[B] test");
 		if (chdir(this->data_dir.c_str())) {
 			fmt::print("[B] new process was unable to chdir: {}\n", errno);
 			exit(1);
